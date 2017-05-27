@@ -3,23 +3,36 @@ fileURL<-"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_
 download.file(fileURL,"PowerData.zip")
 unzip("PowerData.zip")
 
-data <- read.csv("household_power_consumption.txt", sep = ";")
-data$Date <- as.Date(data$Date, format="%d/%m/%Y")
+data <- read.csv("household_power_consumption.txt", sep = ";", na.strings="?")
+data <- data[as.character(data$Date) %in% c('2/2/2007','1/2/2007'),]
+data$DateTime <- strptime(paste(data$Date,data$Time), format="%d/%m/%Y %H:%M:%S")
 
-data <- subset(data, Date >= as.Date("2007-2-1") & Date <= as.Date("2007-2-2"))
 
-dateTime<-paste(data$Date, data$Time)
-data$dateTime<-as.POSIXct(dateTime)
-names(data)[ncol(data)] <- "dateTime"
+## Plot Submetering_1
+plot(x=data$DateTime,
+     y=data$Sub_metering_1,
+     type="l",
+     col="black",
+     xlab="",
+     ylab="Energy sub metering"
+)
 
-with(data, {
-  plot(Sub_metering_1~dateTime, type="l",
-       ylab="Global Active Power (kilowatts)", xlab="")
-  lines(Sub_metering_2~dateTime,col='Red')
-  lines(Sub_metering_3~dateTime,col='Blue')
-})
-legend("topright", col=c("black", "red", "blue"), lwd=c(1,1,1), 
-       +       c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+## Plot sub_metering_2
+lines(x=data$DateTime,
+      y=data$Sub_metering_2,
+      type="l",
+      col="red")
 
-dev.copy(png, file="plot3.png", height=480, width=480)
+## Plot sub_metering_3
+lines(x=data$DateTime,
+      y=data$Sub_metering_3,
+      type="l",
+      col="blue")
+
+legend("topright",
+       legend = c('Sub_metering_1', 'Sub_metering_2', 'Sub_metering_3'),
+       lwd=1,
+       col=c("black", "red", "blue"))
+
+dev.copy(png, filename="plot3.png", width=480, height=480)
 dev.off()
