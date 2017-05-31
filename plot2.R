@@ -1,7 +1,12 @@
 #### plot2.R ####
-fileURL<-"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
-download.file(fileURL,"PowerData.zip")
-unzip("PowerData.zip")
+Sys.setlocale(category = "LC_ALL", "en_US.UTF-8")
+
+if(!file.exists("PowerData.zip")) {
+  fileURL<-"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
+  download.file(fileURL,"PowerData.zip")
+  unzip("PowerData.zip")
+}
+
 
 data <- read.csv("household_power_consumption.txt", sep = ";")
 data$Date <- as.Date(data$Date, format="%d/%m/%Y")
